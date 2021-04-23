@@ -1,0 +1,13 @@
+#grid-container {
+    display: grid;
+    width: 550px;
+    height: 550px;
+    grid-gap: 1px;
+}
+
+.grid-square {
+    background-color: fuchsia;
+    padding: 1px 0px;
+    border: 4px;
+    border-color: black;
+}
