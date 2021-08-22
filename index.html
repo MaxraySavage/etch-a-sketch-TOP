@@ -1,20 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="en">
-<head>
-  <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
 
-  <title>etch-a-sketch</title>
-  <meta name="description" content="etch-a-sketch">
-  <link rel="stylesheet" href="reset.css" />
-  <link rel="stylesheet" href="mystyle.css" />
-</head>
+    <title>etch-a-sketch</title>
+    <meta name="description" content="etch-a-sketch" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="stylesheet" href="mystyle.css" />
+  </head>
 
-<body>
-    <div id="grid-container">
-      
+  <body>
+    <div id="app-container">
+      <div id="etch-a-sketch">
+        <div id="grid-container"></div>
+        <div id="dials-container">
+          <div id="dial-left">|</div>
+          <div id="product-label">Etch-A-Sketch</div>
+          <div id="dial-right">|</div>
+        </div>
+      </div>
+      <div id="slider-container">
+        <h3 id="slider-label">Grid Resolution</h3>
+        <input
+          type="range"
+          min="1"
+          max="10"
+          value="5"
+          id="slider"
+        />
+      </div>
+      <div id="color-picker-container">
+        
+      </div>
     </div>
-
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
