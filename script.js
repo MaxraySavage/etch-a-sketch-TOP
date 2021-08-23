@@ -1,6 +1,9 @@
 const gridContainer = document.getElementById("grid-container");
 const leftDial = document.getElementById('dial-left');
 const rightDial = document.getElementById('dial-right');
+const etchASketch = document.getElementById('etch-a-sketch');
+const slider = document.getElementById('slider');
+const defaultGridSquareRGB = [190,190,190];
 let totalDivs;
 let randomColors = false;
 
@@ -10,21 +13,24 @@ function toRGBArray (rgbStyleString) {
     return rgbStyleString.split('(')[1].slice(0,-1).split(',').map((a) => Number(a));
 }
 
-// Take an array with three elements and sets each element to the
-// Weighted average between those elements and corresponding ones in a target array
-// With the target arrays values weighted by targetWeight
-// This lets us move color values towards background color
-// Used for etchasketch shake color changes
-function moveTowardsTargetColor(rbgArray, rgbTarget=[190,190,190], targetWeight = 1) {
+// Input a domElement and a target color 
+// sets the domelement backgroundcolor to the weighted average of it's current color
+// and the target color
+// Used for etchasketch shake erasing and coloring in the grid squares
+function moveTowardsTargetColor(domElement, rgbTarget=[190,190,190], targetWeight = 1) {
+    let rbgArray = toRGBArray(domElement.style.backgroundColor)
     for(let i = 0; i < 3; i++) {
         rbgArray[i] = Math.round((rbgArray[i] + rgbTarget[i] * targetWeight) / (targetWeight + 1));
     }
+    domElement.style.backgroundColor = `rgb(${rbgArray.join(',')})`;
 }
 
 function setGridDimensions(numRows, numCols) {    
+    // Remove all grid squares
     while (gridContainer.firstChild) {
         gridContainer.removeChild(gridContainer.firstChild);
     }
+    // Set number of rows and columns in the css grid 
     gridContainer.style.gridTemplateColumns = "repeat(" + numCols + ", 1fr)";
     gridContainer.style.gridTemplateRows = "repeat(" + numRows + ", 1fr)";
     totalDivs = numRows * numCols;
@@ -32,40 +38,23 @@ function setGridDimensions(numRows, numCols) {
     for (let i = 0; i < totalDivs; i++) {
         const div = document.createElement('div');
         div.className = "grid-square";
-        div.addEventListener("mouseenter", function changeColor(e) {
-            if(randomColors) {
-                let r = Math.floor(Math.random() * 256);
-                let g = Math.floor(Math.random() * 256)
-                let b = Math.floor(Math.random() * 256)
-                e.target.style.backgroundColor = `rgb(${r},${g},${b})`
-            } else {
-                let rgbString = e.target.style.backgroundColor;
-                if (rgbString === '') {
-                    rgbString= 'rgb(190,190,190)';
-                }
-                rgbVals = toRGBArray(rgbString);
-                moveTowardsTargetColor(rgbVals, [30,30,30], 1);
-                e.target.style.backgroundColor = `rgb(${rgbVals[0]},${rgbVals[1]},${rgbVals[2]})`
-            }
-        });
+        div.style.backgroundColor = `rgb(${defaultGridSquareRGB.join(',')})`;
         docFrag.appendChild(div);
     }
     gridContainer.appendChild(docFrag);
+
 }
 
 function shakeEtchASketch() {
-    let destinationRGB = 190;
+    etchASketch.style.transform = ''
+    etchASketch.style.animationPlayState = 'running';
     gridContainer.childNodes.forEach((child) => {
-        let currentBackground = child.style.backgroundColor;
-        if(currentBackground.includes('rgb')) {
-            currentRGB = toRGBArray(currentBackground);
-            moveTowardsTargetColor(currentRGB);
-            child.style.backgroundColor = `rgb(${currentRGB[0]},${currentRGB[1]},${currentRGB[2]})`;
-        }
+        moveTowardsTargetColor(child, defaultGridSquareRGB);
     });
 }
 
 window.addEventListener('load', () => {
+    // Track angle of etchasketch dials and turn them as mouse moves
     let leftDialDegrees = 270;
     let rightDialDegrees = 90;
     let movementScale = 1;
@@ -76,33 +65,43 @@ window.addEventListener('load', () => {
         rightDial.style.transform = `rotate(${rightDialDegrees}deg`;       
     });
 
-    const etchASketch = document.getElementById('etch-a-sketch');
-    etchASketch.addEventListener('click', () => {
-        etchASketch.style.animationPlayState = 'running';
-        shakeEtchASketch();
-        setTimeout(()=> {
-            etchASketch.style.animationPlayState = 'paused';
-            etchASketch.style.transform = 'rotate(0deg)'
-            etchASketch.style.transform = 'transform(0px)'
-        }, 500)
+    // Click on etchasketch to shake it and erase
+    etchASketch.addEventListener('click', shakeEtchASketch);
+
+    // pauses animation at the end of loop
+    etchASketch.addEventListener('animationiteration', (e) => {
+        e.target.style.animationPlayState = 'paused';
     });
+
+    // Add event listeners to radio buttons that set etcher color flag
     document.getElementById('random').addEventListener('input',()=>{
         randomColors = true;
     });
     document.getElementById('black').addEventListener('input',()=>{
         randomColors = false;
     });
-    document.getElementById('black').click();
-    const slider = document.getElementById('slider');
+    
+    // Add event listener to slider that adjusts grid dimensions
+    // 3 by 5 ratio keeps grids as squares
     slider.addEventListener('input', (e) => {
-    setGridDimensions(e.target.value * 3, e.target.value * 5);
+        setGridDimensions(e.target.value * 3, e.target.value * 5);
+    });
+
+    // This event listener colors in grid squares on mouse over
+    gridContainer.addEventListener("mouseover", function changeColor(e) {
+        if (e.target.className === "grid-square") {
+            if(randomColors) {
+                let r = Math.floor(Math.random() * 256);
+                let g = Math.floor(Math.random() * 256)
+                let b = Math.floor(Math.random() * 256)
+                e.target.style.backgroundColor = `rgb(${r},${g},${b})`
+            } else {
+                // Get color of current square, convert to numerical array,
+                // Then move the color a third of the way to black.
+                moveTowardsTargetColor(e.target, [10,10,10], 0.5);
+            }
+        }
+    });
 });
-
-});
-
-
-
-
-
 
 setGridDimensions(15,25);
