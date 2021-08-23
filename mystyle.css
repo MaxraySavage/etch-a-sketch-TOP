@@ -4,6 +4,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: gray;
+}
+
+h1 {
+    font-family: 'Great Vibes', cursive;
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+    margin-top: 60px;
 }
 
 #app-container {
@@ -11,6 +20,9 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border-radius: 10%;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 #etch-a-sketch {
@@ -76,6 +88,11 @@ body {
 
 #slider-container{
     width: 100%;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 #slider {
@@ -89,8 +106,14 @@ body {
     border-radius: 5px;
   }
 
-.slider:hover {
+#slider:hover {
     opacity: 1;
+}
+
+#color-picker-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* From https://www.w3schools.com/howto/howto_css_shake_image.asp */
